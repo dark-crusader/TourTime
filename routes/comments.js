@@ -42,6 +42,39 @@ router.post('/', isLoggedIn, (req, res) => {
     });
 });
 
+// Route to edit comment
+router.get('/:cid/edit', (req, res) => {
+    Comment.findById(req.params.cid, (err, commentFound) => {
+        if (err) {
+            res.redirect('back');
+        } else {
+            res.render('comments/edit', {camp_id: req.params.id, comment: commentFound});
+        }
+    });
+});
+
+// Route to update comment
+router.put('/:cid', (req, res) => {
+    Comment.findByIdAndUpdate(req.params.cid, req.body.comment, (err, updatedComment) => {
+        if (err) {
+            res.redirect('back');
+        } else {
+            res.redirect(`/campgrounds/${req.params.id}`);
+        }
+    });
+});
+
+// Route to delete coomment
+router.delete('/:cid', (req, res) => {
+    Comment.findByIdAndRemove(req.params.cid, (err) => {
+        if (err) {
+            res.redirect('back');
+        } else {
+            res.redirect(`/campgrounds/${req.params.id}`);
+        }
+    });
+});
+
 // Middleware to check if user is logged in
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
