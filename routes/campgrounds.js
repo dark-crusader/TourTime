@@ -17,15 +17,22 @@ router.get('/', (req, res) => {
 // Creates a new Campground
 router.post('/', isLoggedIn,(req, res) => {
     // Get new data from form
-    const name = req.body.name;
-    const img = req.body.image;
-    const description = req.body.description;
+    const newCamp = {
+        name: req.body.name,
+        image: req.body.image,
+        description: req.body.description,
+        author: {
+            id: req.user.id,
+            username: req.user.username
+        }
+    };
     // Creating a new Campground and saving it to the database
-    Campground.create({name: name, image: img, description: description}, (err, camp) => {
+    Campground.create(newCamp, (err, camp) => {
         if (err) {
             console.log(err);
         } else {
             // Redirect to /campgrounds
+            console.log(camp);
             res.redirect('/campgrounds');
         }
     });
