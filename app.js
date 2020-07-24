@@ -9,7 +9,7 @@ const seedDB = require('./seeds');
 mongoose.connect('mongodb://localhost:27017/tour_time', {useNewUrlParser: true, useUnifiedTopology: true});
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static(__dirname + "/public/images/"));
+app.use(express.static(`${__dirname}/public`));
 
 // Seeding database with initial data
 seedDB();
