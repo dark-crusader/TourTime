@@ -43,7 +43,7 @@ router.post('/', isLoggedIn, (req, res) => {
 });
 
 // Route to edit comment
-router.get('/:cid/edit', (req, res) => {
+router.get('/:cid/edit', checkCommentsOwnership, (req, res) => {
     Comment.findById(req.params.cid, (err, commentFound) => {
         if (err) {
             res.redirect('back');
@@ -54,7 +54,7 @@ router.get('/:cid/edit', (req, res) => {
 });
 
 // Route to update comment
-router.put('/:cid', (req, res) => {
+router.put('/:cid', checkCommentsOwnership, (req, res) => {
     Comment.findByIdAndUpdate(req.params.cid, req.body.comment, (err, updatedComment) => {
         if (err) {
             res.redirect('back');
@@ -65,7 +65,7 @@ router.put('/:cid', (req, res) => {
 });
 
 // Route to delete coomment
-router.delete('/:cid', (req, res) => {
+router.delete('/:cid', checkCommentsOwnership, (req, res) => {
     Comment.findByIdAndRemove(req.params.cid, (err) => {
         if (err) {
             res.redirect('back');
@@ -74,6 +74,26 @@ router.delete('/:cid', (req, res) => {
         }
     });
 });
+
+// Middleware to check ownership
+function checkCommentsOwnership(req, res, next) {
+    if (req.isAuthenticated()) {
+        Comment.findById(req.params.cid, (err, foundComment) => {
+            if (err) {
+                res.redirect('back');
+            } else {
+                // Check if user owns the post
+                if (foundComment.author.id.equals(req.user._id)) {
+                    next();
+                } else {
+                    res.redirect('back');
+                }
+            }
+        });
+    } else {
+        res.redirect('back');
+    }
+}
 
 // Middleware to check if user is logged in
 function isLoggedIn(req, res, next) {
