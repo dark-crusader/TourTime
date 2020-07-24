@@ -30,6 +30,11 @@ passport.use(new LocalStratergy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+app.use((req, res, next) => {
+    res.locals.currentUser = req.user;
+    next();
+});
+
 app.get('/', (req,res) => {
     res.render('index');
 });
@@ -79,7 +84,7 @@ app.get('/campgrounds/:id', (req, res) => {
 });
 
 // Routes for comments
-app.get('/campgrounds/:id/comments/new', (req, res) => {
+app.get('/campgrounds/:id/comments/new', isLoggedIn, (req, res) => {
     // Get campground id
     Campground.findById(req.params.id, (err, campground) => {
         if (err) {
@@ -90,7 +95,7 @@ app.get('/campgrounds/:id/comments/new', (req, res) => {
     });
 });
 
-app.post('/campgrounds/:id/comments', (req, res) => {
+app.post('/campgrounds/:id/comments', isLoggedIn, (req, res) => {
     // Create and add new comment to campground
     // redirect to camground
     Campground.findById(req.params.id, (err, campground) => {
@@ -111,6 +116,51 @@ app.post('/campgrounds/:id/comments', (req, res) => {
     });
 });
 
+// Auth routes
+
+// Show registration form
+app.get('/register', (req, res) => {
+    res.render('register');
+});
+
+// Handle Signup logic
+app.post('/register', (req, res) => {
+    User.register(new User({username: req.body.username}), req.body.password, (err, user) => {
+        if (err) {
+            console.log(err);
+            return res.render('register');
+        }
+        passport.authenticate('local')(req, res, () => {
+            res.redirect('/campgrounds');
+        });
+    });
+});
+
+// Show login form
+app.get('/login', (req, res) => {
+    res.render('login');
+});
+
+// Handle login
+app.post('/login', passport.authenticate('local', {
+    successRedirect: '/campgrounds',
+    failureRedirect: '/login'
+}), (req, res) => {
+});
+
+// Handle logout
+app.get('/logout', (req, res) => {
+    req.logout();
+    res.redirect('/campgrounds');
+});
+
+// Middleware to check if user is logged in
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/login');
+};
 
 app.listen(port = 8080, () => {
     console.log(`App stated at localhost:${port}`);
