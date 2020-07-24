@@ -26,7 +26,7 @@ router.post('/', isLoggedIn,(req, res) => {
             console.log(err);
         } else {
             // Redirect to /campgrounds
-            res.redirect('campgrounds/campgrounds');
+            res.redirect('/campgrounds');
         }
     });
 });
@@ -54,6 +54,6 @@ function isLoggedIn(req, res, next) {
         return next();
     }
     res.redirect('/login');
-};
+}
 
 module.exports = router;

@@ -33,29 +33,29 @@ function seedDB() {
         } else {
             console.log('Removed all campgrounds.');
             // Add initial campgrounds
-            data.forEach(seed => {
-                Campground.create(seed, (err, data) => {
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        console.log(`${data.name} added to the list of campgrounds.`);
-                        // Add dummy comments
-                        Comment.create(
-                            {
-                                text: 'Cool Place',
-                                author: 'Tester 1'
-                            }, (err, comment) => {
-                                if (err) {
-                                    console.log(err);
-                                } else {
-                                    data.comments.push(comment);
-                                    data.save();
-                                    console.log('Created new comment.');
-                                }
-                            });
-                    }
-                });
-            });
+            // data.forEach(seed => {
+            //     Campground.create(seed, (err, data) => {
+            //         if (err) {
+            //             console.log(err);
+            //         } else {
+            //             console.log(`${data.name} added to the list of campgrounds.`);
+            //             // Add dummy comments
+            //             Comment.create(
+            //                 {
+            //                     text: 'Cool Place',
+            //                     author: 'Tester 1'
+            //                 }, (err, comment) => {
+            //                     if (err) {
+            //                         console.log(err);
+            //                     } else {
+            //                         data.comments.push(comment);
+            //                         data.save();
+            //                         console.log('Created new comment.');
+            //                     }
+            //                 });
+            //         }
+            //     });
+            // });
         }
     });
 }

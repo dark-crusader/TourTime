@@ -4,8 +4,6 @@ const app = express();
 const mongoose = require('mongoose');
 const passport = require('passport');
 const LocalStratergy = require('passport-local');
-const Campground = require('./models/campground');
-const Comment = require('./models/comment');
 const User = require('./models/user');
 const seedDB = require('./seeds');
 
@@ -19,7 +17,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(`${__dirname}/public`));
 
 // Seeding database with initial data
-seedDB();
+// seedDB();
 
 // Configuration for Passport
 app.use(require('express-session')({
