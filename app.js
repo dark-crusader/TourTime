@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const mongoose = require('mongoose');
 const passport = require('passport');
+const methodOverride = require('method-override');
 const LocalStratergy = require('passport-local');
 const User = require('./models/user');
 const seedDB = require('./seeds');
@@ -15,6 +16,7 @@ mongoose.connect('mongodb://localhost:27017/tour_time', {useNewUrlParser: true, 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(`${__dirname}/public`));
+app.use(methodOverride('_method'));
 
 // Seeding database with initial data
 // seedDB();

@@ -55,6 +55,56 @@ router.get('/:id', (req, res) => {
     });
 });
 
+// Edit Campground
+router.get('/:id/edit', checkCampgroundOwnership, (req, res) => {
+    // Check for authorization of user
+    Campground.findById(req.params.id, (err, campFound) => {
+        res.render('campgrounds/edit', {campground: campFound});
+    });
+});
+
+// Update Campground
+router.put('/:id', checkCampgroundOwnership, (req, res) => {
+    // Find and update the campground
+    Campground.findByIdAndUpdate(req.params.id, req.body.campground, (err, modCamp) => {
+        if (err) {
+            res.redirect('/campgrounds');
+        } else {
+            res.redirect(`/campgrounds/${req.params.id}`);
+        }
+    });
+});
+
+// Delete route for campground
+router.delete('/:id', checkCampgroundOwnership, (req, res) => {
+    Campground.findByIdAndRemove(req.params.id, (err) => {
+        if (err) {
+            res.redirect('/campgrounds');
+        }
+        res.redirect('/campgrounds');
+    });
+});
+
+// Middleware to check ownership
+function checkCampgroundOwnership(req, res, next) {
+    if (req.isAuthenticated()) {
+        Campground.findById(req.params.id, (err, campFound) => {
+            if (err) {
+                res.redirect('back');
+            } else {
+                // Check if user owns the post
+                if (campFound.author.id.equals(req.user._id)) {
+                    next();
+                } else {
+                    res.redirect('back');
+                }
+            }
+        });
+    } else {
+        res.redirect('back');
+    }
+}
+
 // Middleware to check if user is logged in
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
