@@ -19,12 +19,14 @@ router.get('/register', (req, res) => {
 router.post('/register', (req, res) => {
     User.register(new User({username: req.body.username}), req.body.password, (err, user) => {
         if (err) {
-            console.log(err);
-            return res.render('register');
+            req.flash('error', err.message);
+            res.redirect('register');
+        } else {
+            passport.authenticate('local')(req, res, () => {
+                req.flash('success', `${user.username} welcome to TripTime.`);
+                res.redirect('/campgrounds');
+            });
         }
-        passport.authenticate('local')(req, res, () => {
-            res.redirect('/campgrounds');
-        });
     });
 });
 
@@ -43,6 +45,7 @@ router.post('/login', passport.authenticate('local', {
 // Handle logout
 router.get('/logout', (req, res) => {
     req.logout();
+    req.flash('success', 'You logged out');
     res.redirect('/campgrounds');
 });
 

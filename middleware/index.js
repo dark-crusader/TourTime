@@ -7,18 +7,21 @@ const middlewares = {};
 middlewares.checkCampgroundOwnership = (req, res, next) => {
     if (req.isAuthenticated()) {
         Campground.findById(req.params.id, (err, campFound) => {
-            if (err) {
+            if (err || !campFound) {
+                req.flash('error', 'Campground not found');
                 res.redirect('back');
             } else {
                 // Check if user owns the post
                 if (campFound.author.id.equals(req.user._id)) {
                     next();
                 } else {
+                    req.flash('error', "Sorry. You don't have the pormission to do that...");
                     res.redirect('back');
                 }
             }
         });
     } else {
+        req.flash('error', 'You need to be logged in to do that');
         res.redirect('back');
     }
 }
@@ -27,18 +30,21 @@ middlewares.checkCampgroundOwnership = (req, res, next) => {
 middlewares.checkCommentsOwnership = (req, res, next) => {
     if (req.isAuthenticated()) {
         Comment.findById(req.params.cid, (err, foundComment) => {
-            if (err) {
+            if (err || !foundComment) {
+                req.flash('error', 'Comment not found');
                 res.redirect('back');
             } else {
                 // Check if user owns the post
                 if (foundComment.author.id.equals(req.user._id)) {
                     next();
                 } else {
+                    req.flash('error', "Sorry. You don't have the pormission to do that...");
                     res.redirect('back');
                 }
             }
         });
     } else {
+        req.flash('error', 'You need to be logged in to do that');
         res.redirect('back');
     }
 }
@@ -48,6 +54,7 @@ middlewares.isLoggedIn = (req, res, next) => {
     if (req.isAuthenticated()) {
         return next();
     }
+    req.flash('error', 'You need to be logged in to do that');
     res.redirect('/login');
 };
 
